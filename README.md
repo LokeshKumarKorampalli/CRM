@@ -372,28 +372,15 @@ ai-real-estate-crm/
 │
 ├── static/                     # Static files
 │   ├── style.css              # Main stylesheet
-│   └── images/                # Image assets
 │
 ├── templates/                  # HTML templates
-│   ├── home.html              # Landing page
-│   ├── buyer_entry.html       # Buyer login/register
-│   ├── buyer_register.html    # Registration form
-│   ├── chat.html              # Chat interface
-│   ├── dashboard.html         # Agent dashboard
-│   ├── analytics.html         # Analytics dashboard
-│   └── lead_view.html         # Individual lead view
-│
-├── utils/                      # Utility functions
-│   ├── __init__.py
-│   ├── llm.py                 # LLM integration
-│   ├── extraction.py          # Data extraction
-│   └── email_generator.py     # Email generation
-│
-└── tests/                      # Unit tests
-    ├── __init__.py
-    ├── test_routes.py
-    ├── test_llm.py
-    └── test_extraction.py
+    ├── home.html              # Landing page
+    ├── buyer_entry.html       # Buyer login/register
+    ├── buyer_register.html    # Registration form
+    ├── chat.html              # Chat interface
+    ├── dashboard.html         # Agent dashboard
+    ├── analytics.html         # Analytics dashboard
+    └── lead_view.html         # Individual lead view
 ```
 
 ---
