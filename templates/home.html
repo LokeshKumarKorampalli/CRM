@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Real Estate CRM - Intelligent Lead Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background: linear-gradient(135deg, #F8F6F3 0%, #EDE9E0 100%);
+        }
+
+        .page-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+        }
+
+        .hero {
+            padding: 6rem 2rem 4rem;
+            text-align: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.05));
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent-burgundy);
+            margin-bottom: 2rem;
+            letter-spacing: 0.03em;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+            font-weight: 800;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.1rem, 2vw, 1.3rem);
+            color: var(--text-light);
+            margin-bottom: 3rem;
+            line-height: 1.7;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 4rem;
+        }
+
+        .hero-buttons .btn {
+            font-size: 1.05rem;
+            padding: 1.1rem 2.5rem;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .features-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            font-size: 1.1rem;
+            color: var(--text-light);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-color);
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-gold);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-icon-1 {
+            background: linear-gradient(135deg, #FFF9F0, #FFF5E6);
+        }
+
+        .feature-icon-2 {
+            background: linear-gradient(135deg, #F3E5F5, #E1BEE7);
+        }
+
+        .feature-icon-3 {
+            background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+        }
+
+        .feature-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: var(--primary-dark);
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+
+        .stats-section {
+            background: white;
+            padding: 4rem 2rem;
+            margin: 4rem 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stats-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 1.5rem;
+        }
+
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                padding: 4rem 1.5rem 3rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <nav>
+            <div class="container" style="padding: 0;">
+                <a href="/" class="logo">AI<span>Estate</span></a>
+            </div>
+        </nav>
+
+        <div class="container">
+            <div class="hero animate-in">
+                <div class="hero-badge">🤖 Powered by Advanced AI</div>
+                <h1 class="hero-title">Intelligent Real Estate CRM</h1>
+                <p class="hero-subtitle">
+                    Transform conversations into qualified opportunities with AI-powered lead management. 
+                    Automate scoring, prioritization, and follow-ups to close more deals faster.
+                </p>
+                <div class="hero-buttons">
+                    <a href="/buyer" class="btn btn-primary animate-in-delay-1">
+                        <span style="position: relative; z-index: 1;">🏠 I'm a Buyer</span>
+                    </a>
+                    <a href="/dashboard" class="btn btn-secondary animate-in-delay-2">
+                        📊 I'm an Agent
+                    </a>
+                </div>
+            </div>
+
+            <div class="features-section">
+                <div class="section-header animate-in-delay-3">
+                    <h2>Why Choose AI Estate?</h2>
+                    <p>Cutting-edge AI technology meets real estate expertise</p>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-card animate-in-delay-3">
+                        <div class="feature-icon feature-icon-1">🎯</div>
+                        <h3>Smart Lead Scoring</h3>
+                        <p>
+                            Our AI analyzes conversations in real-time to automatically identify and prioritize 
+                            hot, warm, and cold leads. Focus your energy on the opportunities that matter most.
+                        </p>
+                    </div>
+
+                    <div class="feature-card animate-in-delay-4">
+                        <div class="feature-icon feature-icon-2">💬</div>
+                        <h3>Intelligent Conversations</h3>
+                        <p>
+                            Natural, context-aware chat that extracts key buyer information while building 
+                            genuine rapport. Your AI assistant works 24/7 to qualify leads.
+                        </p>
+                    </div>
+
+                    <div class="feature-card animate-in-delay-5">
+                        <div class="feature-icon feature-icon-3">📊</div>
+                        <h3>Executive Analytics</h3>
+                        <p>
+                            Get comprehensive insights into your pipeline with actionable recommendations. 
+                            Track performance metrics and optimize your sales strategy with data-driven decisions.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <div class="stats-container">
+                <div class="stat-item animate-in">
+                    <div class="stat-number">95%</div>
+                    <div class="stat-label">Lead Qualification Rate</div>
+                </div>
+                <div class="stat-item animate-in-delay-1">
+                    <div class="stat-number">60%</div>
+                    <div class="stat-label">Time Saved</div>
+                </div>
+                <div class="stat-item animate-in-delay-2">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">AI Availability</div>
+                </div>
+                <div class="stat-item animate-in-delay-3">
+                    <div class="stat-number">3x</div>
+                    <div class="stat-label">Conversion Increase</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

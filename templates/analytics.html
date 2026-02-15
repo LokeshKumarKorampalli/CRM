@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard - AI Real Estate CRM</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background: #f5f5f5;
+        }
+
+        nav {
+            padding: 1.2rem 2rem;
+            background: white;
+        }
+
+        nav .logo {
+            font-size: 1.5rem;
+        }
+
+        .container {
+            padding: 2rem;
+            max-width: 1600px;
+        }
+
+        .analytics-header {
+            margin-bottom: 3rem;
+            text-align: left;
+        }
+
+        .analytics-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .analytics-header p {
+            font-size: 1.05rem;
+            color: var(--text-light);
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-color);
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-gold), var(--accent-burgundy));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-change {
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .metric-change.positive {
+            color: #4CAF50;
+        }
+
+        .metric-change.neutral {
+            color: var(--text-light);
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-color);
+            min-height: 400px;
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 0.3rem;
+            font-weight: 400;
+        }
+
+        .full-width-chart {
+            grid-column: 1 / -1;
+        }
+
+        .preferences-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-color);
+        }
+
+        .preferences-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .preferences-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .preference-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--primary-light);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            transition: var(--transition-smooth);
+        }
+
+        .preference-item:hover {
+            background: white;
+            border-color: var(--primary-gold);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .preference-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+
+        .preference-count {
+            background: var(--primary-gold);
+            color: white;
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .insight-card {
+            background: linear-gradient(135deg, #FFF9F0 0%, #FFF5E6 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .insight-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .insight-list {
+            display: grid;
+            gap: 0.8rem;
+        }
+
+        .insight-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid rgba(212, 175, 55, 0.15);
+        }
+
+        .insight-icon {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            background: var(--primary-gold);
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .insight-text {
+            flex: 1;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        @media (max-width: 1200px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .preferences-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo">AI<span>Estate</span></a>
+    </nav>
+
+    <div class="container">
+        <div class="header-actions animate-in">
+            <div class="analytics-header">
+                <h1>📊 Analytics Dashboard</h1>
+                <p>Comprehensive insights into your sales pipeline and lead performance</p>
+            </div>
+            <a href="/dashboard" class="btn btn-secondary">← Back to Dashboard</a>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="stats-grid animate-in-delay-1">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #E3F2FD, #BBDEFB);">
+                        🎯
+                    </div>
+                </div>
+                <div class="metric-label">Total Leads</div>
+                <div class="metric-value" style="color: var(--primary-dark);">{{ total }}</div>
+                <div class="metric-change neutral">
+                    <span>All active leads in pipeline</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #FFEBEE, #FFCDD2);">
+                        🔥
+                    </div>
+                </div>
+                <div class="metric-label">Hot Leads</div>
+                <div class="metric-value" style="color: #C94C4C;">{{ hot }}</div>
+                <div class="metric-change positive">
+                    <span>↑</span>
+                    <span>{{ ((hot / total * 100) if total > 0 else 0)|round(1) }}% of total</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #FFF3E0, #FFE0B2);">
+                        ⚡
+                    </div>
+                </div>
+                <div class="metric-label">Warm Leads</div>
+                <div class="metric-value" style="color: #FF9800;">{{ warm }}</div>
+                <div class="metric-change neutral">
+                    <span>{{ ((warm / total * 100) if total > 0 else 0)|round(1) }}% of total</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #E1F5FE, #B3E5FC);">
+                        ❄️
+                    </div>
+                </div>
+                <div class="metric-label">Cold Leads</div>
+                <div class="metric-value" style="color: #42A5F5;">{{ cold }}</div>
+                <div class="metric-change neutral">
+                    <span>{{ ((cold / total * 100) if total > 0 else 0)|round(1) }}% of total</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI-Generated Insights -->
+        <div class="insight-card animate-in-delay-2">
+            <h3>💡 Key Insights</h3>
+            <div class="insight-list">
+                <div class="insight-item">
+                    <div class="insight-icon">1</div>
+                    <div class="insight-text">
+                        <strong>Hot leads represent {{ ((hot / total * 100) if total > 0 else 0)|round(0)|int }}%</strong> of your pipeline. 
+                        These are your highest-priority opportunities requiring immediate follow-up.
+                    </div>
+                </div>
+                <div class="insight-item">
+                    <div class="insight-icon">2</div>
+                    <div class="insight-text">
+                        {% if budget_buckets['>1M'] > 0 %}
+                        <strong>{{ budget_buckets['>1M'] }} premium leads</strong> with budgets exceeding $1M. 
+                        Consider assigning senior agents to maximize conversion.
+                        {% else %}
+                        Most leads are in the <strong>affordable to mid-range</strong> budget segments.
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="insight-item">
+                    <div class="insight-icon">3</div>
+                    <div class="insight-text">
+                        Timeline analysis shows most buyers are planning within 
+                        <strong>{{ timeline_buckets.keys()|list|first if timeline_buckets else 'various timeframes' }}</strong>.
+                        Adjust your follow-up cadence accordingly.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="chart-grid animate-in-delay-3">
+            <div class="chart-container">
+                <h3 class="chart-title">
+                    💰 Budget Distribution
+                    <div class="chart-subtitle">Lead allocation across price ranges</div>
+                </h3>
+                <canvas id="budgetChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <h3 class="chart-title">
+                    ⏱️ Timeline Distribution
+                    <div class="chart-subtitle">Purchase urgency breakdown</div>
+                </h3>
+                <canvas id="timelineChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-grid animate-in-delay-4">
+            <div class="chart-container">
+                <h3 class="chart-title">
+                    🎯 Recommended Actions
+                    <div class="chart-subtitle">AI-suggested next steps for leads</div>
+                </h3>
+                <canvas id="actionChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <h3 class="chart-title">
+                    📈 Lead Status Overview
+                    <div class="chart-subtitle">Temperature distribution</div>
+                </h3>
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Buyer Preferences -->
+        <div class="preferences-card animate-in-delay-5">
+            <h3>🏠 Top Buyer Preferences</h3>
+            {% if preference_counts %}
+                <div class="preferences-list">
+                    {% for pref, count in preference_counts.items()|sort(attribute='1', reverse=True) %}
+                        <div class="preference-item">
+                            <span class="preference-name">{{ pref }}</span>
+                            <span class="preference-count">{{ count }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p style="color: var(--text-light); text-align: center; padding: 3rem;">
+                    No preference data available yet. Preferences will appear as buyers share their requirements.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Chart.js default settings
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.font.size = 12;
+        Chart.defaults.color = '#666666';
+
+        const chartColors = {
+            gold: 'rgba(212, 175, 55, 0.9)',
+            burgundy: 'rgba(139, 64, 73, 0.9)',
+            sage: 'rgba(138, 154, 123, 0.9)',
+            blue: 'rgba(66, 165, 245, 0.9)',
+            orange: 'rgba(255, 152, 0, 0.9)',
+            red: 'rgba(201, 76, 76, 0.9)'
+        };
+
+        // Budget Chart
+        new Chart(document.getElementById('budgetChart'), {
+            type: 'bar',
+            data: {
+                labels: {{ budget_buckets.keys()|list|tojson }},
+                datasets: [{
+                    label: 'Number of Leads',
+                    data: {{ budget_buckets.values()|list|tojson }},
+                    backgroundColor: [
+                        'rgba(212, 175, 55, 0.85)',
+                        'rgba(139, 64, 73, 0.85)',
+                        'rgba(138, 154, 123, 0.85)'
+                    ],
+                    borderColor: [
+                        'rgba(212, 175, 55, 1)',
+                        'rgba(139, 64, 73, 1)',
+                        'rgba(138, 154, 123, 1)'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 10,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(26, 26, 26, 0.95)',
+                        padding: 14,
+                        cornerRadius: 10,
+                        titleFont: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 13
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0,
+                            font: {
+                                weight: '600'
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.04)',
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                weight: '600'
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Timeline Chart
+        new Chart(document.getElementById('timelineChart'), {
+            type: 'bar',
+            data: {
+                labels: {{ timeline_buckets.keys()|list|tojson }},
+                datasets: [{
+                    label: 'Number of Leads',
+                    data: {{ timeline_buckets.values()|list|tojson }},
+                    backgroundColor: [
+                        'rgba(255, 107, 107, 0.85)',
+                        'rgba(255, 152, 0, 0.85)',
+                        'rgba(66, 165, 245, 0.85)',
+                        'rgba(138, 154, 123, 0.85)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 107, 107, 1)',
+                        'rgba(255, 152, 0, 1)',
+                        'rgba(66, 165, 245, 1)',
+                        'rgba(138, 154, 123, 1)'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 10,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(26, 26, 26, 0.95)',
+                        padding: 14,
+                        cornerRadius: 10,
+                        titleFont: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 13
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0,
+                            font: {
+                                weight: '600'
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.04)',
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                weight: '600'
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Action Chart (Doughnut)
+        new Chart(document.getElementById('actionChart'), {
+            type: 'doughnut',
+            data: {
+                labels: {{ action_counts.keys()|list|tojson }},
+                datasets: [{
+                    data: {{ action_counts.values()|list|tojson }},
+                    backgroundColor: [
+                        'rgba(212, 175, 55, 0.9)',
+                        'rgba(139, 64, 73, 0.9)',
+                        'rgba(138, 154, 123, 0.9)',
+                        'rgba(66, 165, 245, 0.9)',
+                        'rgba(255, 152, 0, 0.9)'
+                    ],
+                    borderColor: 'white',
+                    borderWidth: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 18,
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            },
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(26, 26, 26, 0.95)',
+                        padding: 14,
+                        cornerRadius: 10,
+                        titleFont: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 13
+                        },
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.parsed || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Status Overview Chart (Pie)
+        new Chart(document.getElementById('statusChart'), {
+            type: 'pie',
+            data: {
+                labels: ['Hot', 'Warm', 'Cold'],
+                datasets: [{
+                    data: [{{ hot }}, {{ warm }}, {{ cold }}],
+                    backgroundColor: [
+                        'rgba(201, 76, 76, 0.9)',
+                        'rgba(255, 152, 0, 0.9)',
+                        'rgba(66, 165, 245, 0.9)'
+                    ],
+                    borderColor: 'white',
+                    borderWidth: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 18,
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            },
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(26, 26, 26, 0.95)',
+                        padding: 14,
+                        cornerRadius: 10,
+                        titleFont: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 13
+                        },
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.parsed || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                return `${label}: ${value} leads (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

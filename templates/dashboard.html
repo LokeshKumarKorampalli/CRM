@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AI Real Estate CRM</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        body {
+            background: #f5f5f5;
+        }
+
+        nav { 
+            padding: 1rem 2rem;
+            background: white;
+        }
+        
+        nav .logo { 
+            font-size: 1.4rem; 
+        }
+        
+        .container { 
+            padding: 1.5rem 2rem;
+            max-width: 1400px;
+        }
+
+        .dashboard-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .dashboard-nav h1 {
+            font-size: 2rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .dashboard-nav p {
+            font-size: 0.9rem;
+        }
+
+        .dashboard-actions {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .dashboard-actions .btn {
+            padding: 0.7rem 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-buttons {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.6rem 1.3rem;
+            border: 2px solid var(--border-color);
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.85rem;
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary-gold);
+            transform: translateY(-1px);
+        }
+
+        #clearFilters:hover {
+            background: #ff6b6b;
+            color: white;
+            border-color: #ff6b6b;
+        }
+
+        .filter-btn.active {
+            background: var(--primary-gold);
+            color: white;
+            border-color: var(--primary-gold);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+        }
+
+        .search-bar {
+            position: relative;
+            width: 300px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.7rem 2.8rem 0.7rem 1.2rem;
+            border-radius: 10px;
+            border: 2px solid var(--border-color);
+            font-size: 0.9rem;
+            transition: var(--transition-smooth);
+            background: white;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary-gold);
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            opacity: 0.5;
+        }
+
+        .collapsible {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.4s ease;
+        }
+
+        .filter-panel-card {
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-color);
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .filter-grid label {
+            font-size: 0.85rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .filter-grid input,
+        .filter-grid select {
+            padding: 0.6rem 0.9rem;
+            font-size: 0.9rem;
+        }
+
+        .lead-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.8rem;
+            margin-bottom: 1.2rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+
+        .lead-card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .lead-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .lead-header h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.4rem;
+            color: var(--primary-dark);
+        }
+
+        .lead-header p {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .lead-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .lead-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1.5rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+
+        .lead-actions .btn {
+            padding: 0.6rem 1.3rem;
+            font-size: 0.9rem;
+        }
+
+        .recommended-action-box {
+            background: linear-gradient(135deg, #FFF9F0 0%, #FFF5E6 100%);
+            padding: 1.2rem;
+            border-radius: 10px;
+            margin-top: 1.2rem;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .recommended-action-box .info-label {
+            margin-bottom: 0.6rem;
+        }
+
+        .action-title {
+            font-weight: 700;
+            color: var(--primary-dark);
+            text-transform: capitalize;
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .action-reason {
+            color: var(--text-light);
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .confidence-bar {
+            height: 6px;
+            background: rgba(0, 0, 0, 0.08);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 0.7rem;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-gold), #C4A037);
+            transition: width 0.8s ease;
+            border-radius: 3px;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-top: 1rem;
+        }
+
+        .tag {
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 16px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .tag:hover {
+            background: var(--primary-gold);
+            color: white;
+            border-color: var(--primary-gold);
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 16px;
+            border: 2px dashed var(--border-color);
+        }
+
+        .empty-state h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+        }
+
+        @media (max-width: 968px) {
+            .status-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-bar {
+                width: 100%;
+            }
+
+            .status-buttons {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .dashboard-nav {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .lead-card {
+                padding: 1.3rem;
+            }
+
+            .lead-header {
+                flex-direction: column;
+            }
+
+            .lead-info {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav>
+    <a href="/" class="logo">AI<span>Estate</span></a>
+    <div style="display: flex; align-items: center; gap: 1rem;">
+        {% if session.get('agent_name') %}
+            <span style="color: var(--text-light); font-size: 0.9rem;">
+                👤 {{ session.get('agent_name') }}
+            </span>
+            <a href="/logout" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                Logout
+            </a>
+        {% endif %}
+    </div>
+</nav>
+
+<!-- Flash Messages -->
+<style>
+    .flash-messages {
+        position: fixed;
+        top: 2rem;
+        right: 2rem;
+        z-index: 1000;
+        max-width: 400px;
+    }
+
+    .flash-message {
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        box-shadow: var(--shadow-medium);
+        animation: slideIn 0.3s ease-out;
+    }
+
+    .flash-success { background: #4CAF50; color: white; }
+    .flash-error { background: #f44336; color: white; }
+    .flash-warning { background: #FF9800; color: white; }
+    .flash-info { background: #2196F3; color: white; }
+
+    @keyframes slideOut {
+        to {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+    }
+</style>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+                <div class="flash-message flash-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+<div class="container">
+
+    <div class="dashboard-nav">
+        <div>
+            <h1>Agent Dashboard</h1>
+            <p style="color: var(--text-light);">
+                Manage and track all your leads in one place
+            </p>
+        </div>
+
+        <div class="dashboard-actions">
+            <a href="/analytics" class="btn btn-secondary">📊 View Analytics</a>
+            <a href="{{ url_for('buyer_register') }}" class="btn btn-primary">
+                <span style="position: relative; z-index: 1;">+ Add Lead</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="status-row">
+        <div class="status-buttons">
+            <button class="filter-btn active" data-status="all">All</button>
+            <button class="filter-btn" data-status="Hot">🔥 Hot</button>
+            <button class="filter-btn" data-status="Warm">⚡ Warm</button>
+            <button class="filter-btn" data-status="Cold">❄️ Cold</button>
+            <button class="filter-btn" id="toggleFilters">⚙️ Filters</button>
+            <button class="filter-btn" id="clearFilters" style="display: none; border-color: #ff6b6b; color: #ff6b6b;">✕ Clear</button>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+            <div id="leadCounter" style="font-size: 0.9rem; color: var(--text-light); font-weight: 600; white-space: nowrap;">
+                <span id="visibleCount">0</span> of <span id="totalCount">0</span> leads
+            </div>
+            <div class="search-bar">
+                <input type="text" id="leadSearch" placeholder="Search leads...">
+                <span class="search-icon">🔍</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="filterPanel" class="collapsible">
+        <div class="filter-panel-card">
+            <form method="GET">
+                <div class="filter-grid">
+                    <div>
+                        <label>Location</label>
+                        <input type="text" name="location"
+                               placeholder="e.g., Austin"
+                               value="{{ request.args.get('location','') }}">
+                    </div>
+
+                    <div>
+                        <label>Min Budget</label>
+                        <input type="number" name="min_budget"
+                               placeholder="e.g., 500000"
+                               value="{{ request.args.get('min_budget','') }}">
+                    </div>
+
+                    <div>
+                        <label>Max Budget</label>
+                        <input type="number" name="max_budget"
+                               placeholder="e.g., 1000000"
+                               value="{{ request.args.get('max_budget','') }}">
+                    </div>
+
+                    <div>
+                        <label>Timeline (Months)</label>
+                        <input type="number" name="timeline"
+                               placeholder="e.g., 3"
+                               value="{{ request.args.get('timeline','') }}">
+                    </div>
+
+                    <div>
+                        <label>Sort By</label>
+                        <select name="sort">
+                            <option value="lead_score">Lead Score</option>
+                            <option value="budget">Budget</option>
+                            <option value="timeline_months">Timeline</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            <span style="position: relative; z-index: 1;">Apply Filters</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if leads|length == 0 %}
+        <div class="empty-state">
+            <h3>No leads yet</h3>
+            <p style="color: var(--text-light); margin-bottom: 2rem;">
+                Start by adding your first lead to the CRM
+            </p>
+            <a href="/buyer/register" class="btn btn-primary">
+                <span style="position: relative; z-index: 1;">Add First Lead</span>
+            </a>
+        </div>
+    {% else %}
+
+        {% for lead in leads %}
+        <div class="lead-card" data-status="{{ lead.status }}">
+
+            <div class="lead-header">
+                <div>
+                    <h3>{{ lead.name }}</h3>
+                    <p>{{ lead.email }} • {{ lead.phone }}</p>
+                </div>
+
+                <span class="badge badge-{{ lead.status|lower }}">
+                    {{ lead.status }}
+                </span>
+            </div>
+
+            <div class="lead-info">
+                {% set score = lead.get('lead_score', 0) %}
+                <div class="info-item">
+                    <span class="info-label">Lead Score</span>
+                    <span class="info-value" style="color:
+                        {% if score >= 75 %}#C94C4C
+                        {% elif score >= 40 %}#FF9800
+                        {% else %}#42A5F5{% endif %};">
+                        {{ score }}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Budget</span>
+                    <span class="info-value">
+                        {% if lead.budget %}
+                            ${{ "{:,.0f}".format(lead.budget) }}
+                        {% else %}
+                            Not specified
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Timeline</span>
+                    <span class="info-value">
+                        {% if lead.timeline_months %}
+                            {{ lead.timeline_months }} month{{ 's' if lead.timeline_months != 1 else '' }}
+                        {% else %}
+                            Not specified
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Property Type</span>
+                    <span class="info-value">
+                        {{ lead.property_type if lead.property_type else 'Not specified' }}
+                    </span>
+                </div>
+            </div>
+
+            {% if lead.recommended_action %}
+                <div class="recommended-action-box">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                        <div>
+                            <span class="info-label">Recommended Action</span>
+                            <div class="action-title">
+                                {{ lead.recommended_action.replace('_', ' ') }}
+                            </div>
+                        </div>
+                        {% if lead.decision_confidence %}
+                            <span class="badge" style="background: var(--accent-sage); font-size: 0.75rem;">
+                                {{ (lead.decision_confidence * 100)|int }}% confident
+                            </span>
+                        {% endif %}
+                    </div>
+                    {% if lead.decision_reason %}
+                        <p class="action-reason">{{ lead.decision_reason }}</p>
+                    {% endif %}
+                    {% if lead.decision_confidence %}
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: {{ (lead.decision_confidence * 100)|int }}%"></div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {% if lead.extra_details and lead.extra_details|length > 0 %}
+                <div style="margin-top: 1.2rem;">
+                    <span class="info-label" style="display: block; margin-bottom: 0.6rem;">Buyer Preferences</span>
+                    <div class="tags">
+                        {% for detail in lead.extra_details %}
+                            <span class="tag">{{ detail }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="lead-actions">
+                <a href="/lead/{{ lead._id }}">📄 View Lead</a>
+                {% if lead.meeting_time %}
+                    <span class="badge" style="background: var(--accent-sage); padding: 0.6rem 1.2rem; display: inline-flex; align-items: center; gap: 0.4rem;">
+                        📅 Meeting: {{ lead.meeting_time }}
+                    </span>
+                {% endif %}
+            </div>
+
+        </div>
+        {% endfor %}
+
+    {% endif %}
+
+</div>
+
+<script>
+    // Toggle Filters Panel
+    const toggleBtn = document.getElementById("toggleFilters");
+    const filterPanel = document.getElementById("filterPanel");
+    const clearFiltersBtn = document.getElementById("clearFilters");
+
+    toggleBtn.addEventListener("click", function () {
+        if (filterPanel.style.maxHeight) {
+            filterPanel.style.maxHeight = null;
+            toggleBtn.textContent = "⚙️ Filters";
+        } else {
+            filterPanel.style.maxHeight = filterPanel.scrollHeight + "px";
+            toggleBtn.textContent = "✕ Close";
+        }
+    });
+
+    // Filter and Search Functionality
+    const statusButtons = document.querySelectorAll(".filter-btn[data-status]");
+    const cards = document.querySelectorAll(".lead-card");
+    const searchInput = document.getElementById("leadSearch");
+    const visibleCountEl = document.getElementById("visibleCount");
+    const totalCountEl = document.getElementById("totalCount");
+    const filterForm = document.querySelector('#filterPanel form');
+
+    let currentStatus = "all";
+
+    // Set initial counts
+    totalCountEl.textContent = cards.length;
+
+    // Check if any URL parameters exist
+    function hasUrlParams() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.toString() !== '';
+    }
+
+    // Check if form has any values
+    function hasFormValues() {
+        if (!filterForm) return false;
+        const formData = new FormData(filterForm);
+        for (let [key, value] of formData.entries()) {
+            if (value && value.trim() !== '') {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function updateCounter() {
+        let visibleCount = 0;
+        cards.forEach(card => {
+            if (card.style.display !== "none") {
+                visibleCount++;
+            }
+        });
+        visibleCountEl.textContent = visibleCount;
+    }
+
+    function applyFilters() {
+        const query = searchInput.value.toLowerCase().trim();
+
+        cards.forEach(card => {
+            const matchesStatus =
+                currentStatus === "all" ||
+                card.dataset.status === currentStatus;
+
+            const matchesSearch =
+                !query || card.innerText.toLowerCase().includes(query);
+
+            if (matchesStatus && matchesSearch) {
+                card.style.display = "block";
+            } else {
+                card.style.display = "none";
+            }
+        });
+
+        updateCounter();
+        
+        // Show/hide clear button
+        if (currentStatus !== "all" || query !== "" || hasUrlParams() || hasFormValues()) {
+            clearFiltersBtn.style.display = "inline-block";
+        } else {
+            clearFiltersBtn.style.display = "none";
+        }
+    }
+
+    // Clear all filters
+    clearFiltersBtn.addEventListener("click", function() {
+        // Reset status filter
+        currentStatus = "all";
+        statusButtons.forEach(btn => btn.classList.remove("active"));
+        statusButtons[0].classList.add("active"); // Activate "All" button
+        
+        // Clear search
+        searchInput.value = "";
+        
+        // Clear all form inputs
+        if (filterForm) {
+            filterForm.reset();
+            // Clear URL parameters by redirecting to clean URL
+            window.location.href = window.location.pathname;
+        } else {
+            // If no form, just apply filters
+            applyFilters();
+        }
+    });
+
+    statusButtons.forEach(button => {
+        button.addEventListener("click", function () {
+            statusButtons.forEach(btn => btn.classList.remove("active"));
+            this.classList.add("active");
+            currentStatus = this.dataset.status;
+            applyFilters();
+        });
+    });
+
+    searchInput.addEventListener("input", applyFilters);
+
+    // Initial count update and clear button check
+    updateCounter();
+    
+    // Show clear button on page load if filters are active
+    if (hasUrlParams() || hasFormValues()) {
+        clearFiltersBtn.style.display = "inline-block";
+    }
+
+    // Animate confidence bars on load
+    window.addEventListener('load', function() {
+        document.querySelectorAll('.confidence-fill').forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 100);
+        });
+    });
+
+    // Auto-hide flash messages
+    setTimeout(function() {
+        const flashes = document.querySelectorAll('.flash-message');
+        flashes.forEach(flash => {
+            flash.style.animation = 'slideOut 0.3s ease-out forwards';
+            setTimeout(() => flash.remove(), 300);
+        });
+    }, 5000);
+</script>
+
+</body>
+</html>

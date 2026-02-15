@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buyer Portal - AI Estate</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background: linear-gradient(135deg, #F8F6F3 0%, #EDE9E0 100%);
+        }
+
+        .portal-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 2rem;
+        }
+
+        .portal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        .portal-card {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: var(--shadow-medium);
+            border: 1px solid var(--border-color);
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .portal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-gold);
+        }
+
+        .portal-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .card-icon {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 1.5rem;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+
+        .icon-new {
+            background: linear-gradient(135deg, #FFF9F0, #FFF5E6);
+        }
+
+        .icon-returning {
+            background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+        }
+
+        .card-header h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-dark);
+        }
+
+        .card-header p {
+            font-size: 0.95rem;
+            color: var(--text-light);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+            color: var(--text-dark);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: var(--transition-smooth);
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-gold);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.08);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 1.1rem;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-top: 1rem;
+            border-radius: 12px;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 2rem 0;
+            color: var(--text-light);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .divider span {
+            padding: 0 1rem;
+        }
+
+        .info-box {
+            background: var(--primary-light);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.2rem;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        .info-box strong {
+            color: var(--text-dark);
+        }
+
+        @media (max-width: 768px) {
+            .portal-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .portal-card {
+                padding: 2rem;
+            }
+
+            .content-wrapper {
+                padding: 2rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="portal-container">
+        <nav>
+            <a href="/" class="logo">AI<span>Estate</span></a>
+        </nav>
+
+        <div class="content-wrapper">
+            <div class="portal-grid">
+                <!-- New Buyer Registration -->
+                <div class="portal-card animate-in">
+                    <div class="card-header">
+                        <div class="card-icon icon-new">🏡</div>
+                        <h2>New Buyer</h2>
+                        <p>Start your property search journey</p>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('buyer_register') }}">
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input 
+                                type="text" 
+                                id="name"
+                                name="name" 
+                                placeholder="Enter your name"
+                                required 
+                                autocomplete="name"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input 
+                                type="email" 
+                                id="email"
+                                name="email" 
+                                placeholder="your.email@example.com"
+                                required
+                                autocomplete="email"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input 
+                                type="tel" 
+                                id="phone"
+                                name="phone" 
+                                placeholder="+1 (555) 123-4567"
+                                required
+                                autocomplete="tel"
+                            >
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-submit">
+                            <span style="position: relative; z-index: 1;">Start Chat with AI →</span>
+                        </button>
+
+                        <div class="info-box">
+                            <strong>💡 What happens next?</strong><br>
+                            You'll chat with our AI assistant who will learn about your property preferences and budget to help find your perfect home.
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Returning Buyer Login -->
+                <div class="portal-card animate-in-delay-1">
+                    <div class="card-header">
+                        <div class="card-icon icon-returning">👤</div>
+                        <h2>Returning Buyer</h2>
+                        <p>Continue your conversation</p>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('buyer_login') }}">
+                        <div class="form-group">
+                            <label for="login-email">Email Address</label>
+                            <input 
+                                type="email" 
+                                id="login-email"
+                                name="identifier" 
+                                placeholder="your.email@example.com"
+                                required
+                                autocomplete="email"
+                            >
+                        </div>
+
+                        <button type="submit" class="btn btn-secondary btn-submit">
+                            Continue Chat →
+                        </button>
+
+                        <div class="info-box">
+                            <strong>🔒 Secure Access</strong><br>
+                            Your conversation history and preferences are securely saved. Simply enter your email to pick up where you left off.
+                        </div>
+                    </form>
+
+                    <div class="divider">
+                        <span>OR</span>
+                    </div>
+
+                    <a href="/" class="btn btn-secondary" style="width: 100%; text-align: center; display: block;">
+                        ← Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
