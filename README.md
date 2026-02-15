@@ -79,17 +79,17 @@ AI Real Estate CRM is a modern, AI-first customer relationship management system
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                         Frontend                             │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
-│  │   Home   │  │  Buyer   │  │Dashboard │  │Analytics │   │
-│  │  Page    │  │  Portal  │  │          │  │          │   │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
+│                         Frontend                            │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐    │
+│  │   Home   │  │  Buyer   │  │Dashboard │  │Analytics │    │
+│  │  Page    │  │  Portal  │  │          │  │          │    │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘    │
 └─────────────────────────────────────────────────────────────┘
                             ↕
 ┌─────────────────────────────────────────────────────────────┐
-│                      Flask Backend                           │
+│                      Flask Backend                          │
 │  ┌──────────────────────────────────────────────────────┐   │
-│  │  Routes: /, /buyer, /chat, /dashboard, /analytics   │   │
+│  │  Routes: /, /buyer, /chat, /dashboard, /analytics    │   │
 │  └──────────────────────────────────────────────────────┘   │
 │  ┌──────────────────────────────────────────────────────┐   │
 │  │  Session Management & Authentication                 │   │
@@ -97,16 +97,16 @@ AI Real Estate CRM is a modern, AI-first customer relationship management system
 └─────────────────────────────────────────────────────────────┘
                             ↕
 ┌─────────────────────────────────────────────────────────────┐
-│                      AI Layer (Ollama)                       │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
-│  │ Conversation │  │  Extraction  │  │  Completion  │      │
-│  │   Handler    │  │    Engine    │  │   Detector   │      │
-│  └──────────────┘  └──────────────┘  └──────────────┘      │
-│                   LLaMA 3 (8B model)                         │
+│                      AI Layer (Ollama)                      │
+│   ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
+│   │ Conversation │  │  Extraction  │  │  Completion  │      │
+│   │   Handler    │  │    Engine    │  │   Detector   │      │
+│   └──────────────┘  └──────────────┘  └──────────────┘      │
+│                   LLaMA 3 (8B model)                        │
 └─────────────────────────────────────────────────────────────┘
                             ↕
 ┌─────────────────────────────────────────────────────────────┐
-│                      MongoDB Database                        │
+│                     MongoDB Database                        │
 │  ┌──────────────┐                  ┌──────────────┐         │
 │  │    Leads     │                  │    Emails    │         │
 │  │  Collection  │                  │  Collection  │         │
