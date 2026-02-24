@@ -322,7 +322,7 @@
                         </div>
                     </div>
                 </div>
-                <span class="badge badge-{{ lead.status|lower }}" style="font-size: 0.9rem; padding: 0.6rem 1.5rem;">
+                <span class="badge badge-{{ lead.status|lower|replace(' ', '-') }}" style="font-size: 0.9rem; padding: 0.6rem 1.5rem;">
                     {{ lead.status }}
                 </span>
             </div>

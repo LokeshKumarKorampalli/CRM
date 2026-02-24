@@ -310,7 +310,6 @@ label {
     color: white;
 }
 
-.badge-summary\ sent,
 .badge-summary-sent {
     background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
     color: white;
