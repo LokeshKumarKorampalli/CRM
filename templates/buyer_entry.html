@@ -189,6 +189,40 @@
             <a href="/" class="logo">AI<span>Estate</span></a>
         </nav>
 
+        <!-- Flash Messages -->
+        <style>
+            .flash-messages {
+                position: fixed;
+                top: 5rem;
+                right: 2rem;
+                z-index: 1000;
+                max-width: 400px;
+            }
+            .flash-message {
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                margin-bottom: 0.5rem;
+                box-shadow: var(--shadow-medium);
+                animation: slideIn 0.3s ease-out;
+            }
+            .flash-success { background: #4CAF50; color: white; }
+            .flash-error { background: #f44336; color: white; }
+            .flash-warning { background: #FF9800; color: white; }
+            .flash-info { background: #2196F3; color: white; }
+        </style>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
         <div class="content-wrapper">
             <div class="portal-grid">
                 <!-- New Buyer Registration -->

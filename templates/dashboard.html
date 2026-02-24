@@ -527,7 +527,7 @@
                     <p>{{ lead.email }} • {{ lead.phone }}</p>
                 </div>
 
-                <span class="badge badge-{{ lead.status|lower }}">
+                <span class="badge badge-{{ lead.status|lower|replace(' ', '-') }}">
                     {{ lead.status }}
                 </span>
             </div>

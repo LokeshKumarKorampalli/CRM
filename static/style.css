@@ -102,6 +102,9 @@ nav {
     top: 0;
     z-index: 100;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 nav .logo {
@@ -305,6 +308,12 @@ label {
 .badge-new {
     background: linear-gradient(135deg, var(--accent-sage) 0%, #7A8A6B 100%);
     color: white;
+}
+
+.badge-summary-sent {
+    background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(156, 39, 176, 0.25);
 }
 
 /* Metrics */

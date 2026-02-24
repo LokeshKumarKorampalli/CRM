@@ -5,7 +5,11 @@ from datetime import datetime, timedelta
 from config import SECRET_KEY
 import requests
 import json
+import logging
+import re
 from functools import wraps
+
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = SECRET_KEY
@@ -77,7 +81,8 @@ Conversation:
         )
         response.raise_for_status()
         return response.json().get("response", "").strip()
-    except:
+    except Exception as e:
+        logger.exception("Error calling Ollama for conversation: %s", e)
         return "I'm experiencing a temporary issue. Please try again shortly."
 
 
@@ -129,7 +134,8 @@ Conversation:
             return {}
 
         return json.loads(raw[start:end])
-    except:
+    except Exception as e:
+        logger.exception("Error during incremental extraction: %s", e)
         return {}
 
 
@@ -187,7 +193,8 @@ Conversation:
         result = json.loads(raw[start:end])
         return result.get("chat_completed", False)
 
-    except:
+    except Exception as e:
+        logger.exception("Error during chat completion decision: %s", e)
         return False
 
 
@@ -260,9 +267,17 @@ def buyer_entry():
 @app.route("/buyer/register", methods=["GET", "POST"])
 def buyer_register():
     if request.method == "POST":
-        name = request.form["name"]
-        email = request.form["email"]
-        phone = request.form["phone"]
+        name = request.form.get("name", "").strip()
+        email = request.form.get("email", "").strip().lower()
+        phone = request.form.get("phone", "").strip()
+
+        if not name or not email or not phone:
+            flash("All fields are required.", "error")
+            return redirect(url_for("buyer_entry"))
+
+        if not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email):
+            flash("Please enter a valid email address.", "error")
+            return redirect(url_for("buyer_entry"))
 
         existing = leads_collection.find_one({"email": email})
         if existing:
@@ -321,6 +336,13 @@ def buyer_login():
         return redirect(url_for("chat", lead_id=lead["_id"]))
 
     return render_template("buyer_login.html")
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("You have been logged out.", "info")
+    return redirect(url_for("home"))
 
 
 @app.route("/chat/<lead_id>", methods=["GET", "POST"])
